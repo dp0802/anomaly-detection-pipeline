@@ -138,11 +138,17 @@ The notebook reproduces a benchmark across the four detectors, sweeps Isolation 
 
 ## Screenshots
 
-> Add screenshots of the dashboard here once you've captured them.
+**Dashboard Overview** — KPIs, sensor readings with anomaly markers (red X = detected, red O = ground truth)
 
-- `docs/screenshots/dashboard_overview.png`
-- `docs/screenshots/anomaly_timeline.png`
-- `docs/screenshots/alert_feed.png`
+![Dashboard Overview](docs/screenshots/dashboard_overview.png)
+
+**Anomaly Score Timeline** — ensemble vote per sensor over time
+
+![Anomaly Timeline](docs/screenshots/anomaly_timeline.png)
+
+**Alert Feed & Detector Performance** — severity-coded alerts, precision/recall/F1 table
+
+![Alert Feed](docs/screenshots/alert_feed.png)
 
 ## Performance
 
