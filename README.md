@@ -87,7 +87,7 @@ anomaly-detection-pipeline/
 ## Setup
 
 ```bash
-git clone https://github.com/digvijaykumarprajapati/anomaly-detection-pipeline.git
+git clone https://github.com/dp0802/anomaly-detection-pipeline.git
 cd anomaly-detection-pipeline
 
 python -m venv .venv
