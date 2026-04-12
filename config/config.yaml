@@ -1,0 +1,95 @@
+# =====================================================================
+# Real-Time Anomaly Detection Pipeline — Master Configuration
+# =====================================================================
+# All tunable parameters live here. Modules read this file at startup
+# via src.config.load_config(). Keep environment-specific overrides in
+# config/local.yaml (gitignored) if needed.
+# ---------------------------------------------------------------------
+
+pipeline:
+  name: "rt-anomaly-detector"
+  log_level: "INFO"
+  random_seed: 42
+
+# ----------------------------- Data Generator ------------------------
+data_generator:
+  num_sensors: 5
+  records_per_second: 20          # nominal target rate
+  emit_delay_seconds: 0.05        # sleep between emissions (1/rate)
+  anomaly_rate: 0.04              # 4% of records are anomalous
+  anomaly_types:                  # weights for each anomaly type
+    point: 0.30
+    contextual: 0.20
+    collective: 0.20
+    drift: 0.15
+    multivariate: 0.15
+  feature_ranges:                 # realistic IoT sensor envelopes
+    temperature: { mean: 65.0, std: 4.0, min: 40.0, max: 95.0 }
+    pressure:    { mean: 101.3, std: 1.5, min: 90.0,  max: 115.0 }
+    vibration:   { mean: 0.5,  std: 0.1,  min: 0.0,   max: 2.5 }
+    power:       { mean: 220.0, std: 8.0, min: 180.0, max: 260.0 }
+  seasonal:
+    daily_amplitude: 3.0          # daily cycle amplitude (temperature)
+    period_seconds: 86400         # 1 day
+
+# ----------------------------- Stream Processor ----------------------
+stream:
+  queue_max_size: 5000
+  window_size: 200                # rolling window for context features
+  consumer_workers: 1
+  metrics_interval_seconds: 5     # how often to log throughput
+
+# ----------------------------- Detectors -----------------------------
+detectors:
+  isolation_forest:
+    enabled: true
+    contamination: 0.05
+    n_estimators: 150
+    max_samples: 256
+    initial_train_size: 300
+    retrain_every: 1000
+    score_threshold: 0.0          # decision_function < 0 ⇒ anomaly
+    weight: 0.40                  # ensemble weight
+
+  dbscan:
+    enabled: true
+    eps: 1.2                      # tuned for 4 standard-scaled features
+    min_samples: 8
+    window_size: 200
+    weight: 0.25
+
+  zscore:
+    enabled: true
+    window_size: 150
+    sigma_threshold: 3.0
+    weight: 0.35
+
+ensemble:
+  vote_threshold: 0.50            # weighted vote ≥ 0.50 ⇒ flag
+  features:                       # features used by all detectors
+    - temperature
+    - pressure
+    - vibration
+    - power_consumption
+
+# ----------------------------- Alerts --------------------------------
+alerts:
+  cooldown_seconds: 30            # de-dup window per (sensor, severity)
+  log_path: "logs/alerts.jsonl"
+  console_color: true
+  severity_rules:
+    low: 1                        # detectors agreeing
+    medium: 2
+    high: 3                       # all 3 base detectors AND ensemble
+
+# ----------------------------- Database ------------------------------
+database:
+  path: "data/pipeline.db"
+  batch_size: 50
+  flush_interval_seconds: 2
+
+# ----------------------------- Dashboard -----------------------------
+dashboard:
+  refresh_seconds: 2
+  history_window: 500
+  page_title: "Real-Time Anomaly Detection"

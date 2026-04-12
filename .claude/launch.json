@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Anomaly Detection Pipeline",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "src.run_pipeline", "--reset", "--max-records", "5000"],
+      "port": null
+    },
+    {
+      "name": "Streamlit Dashboard",
+      "runtimeExecutable": "streamlit",
+      "runtimeArgs": ["run", "src/dashboard.py", "--server.port", "8501", "--server.headless", "true"],
+      "port": 8501
+    },
+    {
+      "name": "Jupyter Notebook",
+      "runtimeExecutable": "jupyter",
+      "runtimeArgs": ["notebook", "notebooks/EDA_and_Model_Tuning.ipynb", "--port", "8888"],
+      "port": 8888
+    }
+  ]
+}
