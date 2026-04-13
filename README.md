@@ -180,4 +180,4 @@ The numbers below come from a 2 000-record run with the default configuration on
 
 ## License
 
-MIT — see `LICENSE` (add a license file before publishing the repo).
+All rights reserved. This code is provided for viewing and educational reference only. See [`LICENSE`](LICENSE) for details.
